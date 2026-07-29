@@ -12,3 +12,7 @@ Personal project notes for telecom API experiments.
 
 ## License
 MIT
+
+## Files
+- telnyx_helper.py — minimal API helper example
+- Updated: 2026-07-29 23:56 UTC
