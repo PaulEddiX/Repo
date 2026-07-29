@@ -16,3 +16,5 @@ def list_phone_numbers(api_key: str) -> dict:
 
 if __name__ == "__main__":
     print("Set TELNYX_API_KEY and call list_phone_numbers() to fetch numbers.")
+def log_event(event: str) -> None:
+    print(f'[telnyx] {event}')
