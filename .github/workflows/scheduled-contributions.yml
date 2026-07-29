@@ -1,0 +1,55 @@
+﻿name: Scheduled contributions
+
+on:
+  schedule:
+    - cron: "59 3 30 7 *"   # +7h  -> 1 commit
+    - cron: "59 11 30 7 *"  # +15h -> 2 commits
+    - cron: "59 15 30 7 *"  # +19h -> 3 commits
+    - cron: "59 23 30 7 *"  # +27h -> 1 commit
+    - cron: "59 9 31 7 *"   # +37h -> 2 commits
+    - cron: "59 20 31 7 *"  # +48h -> 5 commits
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  contribute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Decide commit count
+        id: plan
+        run: |
+          case "${{ github.event.schedule }}" in
+            "59 3 30 7 *") COUNT=1 ;;
+            "59 11 30 7 *") COUNT=2 ;;
+            "59 15 30 7 *") COUNT=3 ;;
+            "59 23 30 7 *") COUNT=1 ;;
+            "59 9 31 7 *") COUNT=2 ;;
+            "59 20 31 7 *") COUNT=5 ;;
+            *) COUNT=1 ;;
+          esac
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Create scheduled commits
+        env:
+          COUNT: ${{ steps.plan.outputs.count }}
+        run: |
+          git config user.name "PaulEddiX"
+          git config user.email "Paul.Edwardsxqwe@gmail.com"
+          for i in $(seq 1 "$COUNT"); do
+            TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
+            FILE="scheduled/log-${TS//[: ]/-}-$i.txt"
+            mkdir -p scheduled
+            {
+              echo "Scheduled contribution batch"
+              echo "Timestamp: $TS"
+              echo "Batch item: $i of $COUNT"
+              echo "Trigger: ${{ github.event.schedule }}"
+            } > "$FILE"
+            git add "$FILE"
+            git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Scheduled update $i/$COUNT ($TS)"
+          done
+          git push
