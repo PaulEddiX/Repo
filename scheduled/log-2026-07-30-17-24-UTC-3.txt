@@ -1,0 +1,4 @@
+Scheduled contribution batch
+Timestamp: 2026-07-30 17:24 UTC
+Batch item: 3 of 3
+Trigger: 59 15 30 7 *
